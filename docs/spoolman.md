@@ -7,6 +7,9 @@ title: Spoolman Integration
 Automatic filament metadata sync and spool tracking via
 [Spoolman](https://github.com/Donkie/Spoolman).
 
+> Setting this up for the first time? See the
+> [NFC Tags & Spoolman Setup Guide](nfc_spoolman_setup.md).
+
 ## What It Provides
 
 - Resolves a Spoolman spool by ID or RFID card UID and applies its
@@ -26,9 +29,10 @@ tag:
 
 ## Enabling
 
-Enable via Fluidd/Mainsail settings under
-**Snapmaker Components > Spoolman Integration**, set the Spoolman host,
-and reboot. Set the same toggle to **Disabled** to turn it off.
+Enable in the [firmware-config](firmware_config.md) web interface under
+**Settings > Snapmaker Components > Spoolman Integration**, and enter the Spoolman
+URL including scheme and port (e.g. `http://192.168.1.100:7912`). Set the same
+toggle to **Disabled** to turn it off.
 
 ## Apps
 
