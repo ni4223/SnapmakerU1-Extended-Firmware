@@ -161,7 +161,7 @@ Changes take effect immediately after Klipper restarts (no reboot required).
 These tweaks work by adding or removing configuration files from `/oem/printer_data/config/extended/`:
 - `klipper/tmc_autotune.cfg` - TMC AutoTune parameters
 - `klipper/tmc_current.cfg` - Reduced current settings
-- `klipper/max_speed.cfg` - Max Speed motion limits, tool change speeds and driver tuning
+- `klipper/10_max_speed.cfg` - Max Speed motion limits, tool change speeds and driver tuning
 - `moonraker/object_processing.cfg` - Moonraker object processing settings
 
 These files are automatically included by the main printer configuration if present. Manual editing of these files is not recommended as they will be overwritten by the Firmware Configuration interface.

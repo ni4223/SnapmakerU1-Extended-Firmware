@@ -21,7 +21,7 @@ settings:
               - bash
               - -xc
               - |
-                if test -f /oem/printer_data/config/extended/klipper/max_speed.cfg; then
+                if test -f /oem/printer_data/config/extended/klipper/10_max_speed.cfg; then
                   echo "ERROR: Max Speed is enabled and needs the full 1.2A X/Y motor current."
                   echo "Disable Max Speed first, then enable TMC Reduced Current."
                   exit 1
