@@ -28,7 +28,7 @@ settings:
         options:
           balanced:
             label: Balanced
-            confirm: "Enable Max Speed (Balanced)? This raises XY velocity to 600 mm/s, acceleration to 22000 mm/s², tool change speed to 550 mm/s, tool change acceleration to 12000 mm/s² and dock grab speed to 20 mm/s. Only enable this if dock positions and belt tension are calibrated and tool changes are already reliable. Cannot be combined with TMC AutoTune or TMC Reduced Current."
+            confirm: "Enable Max Speed (Balanced)? Sets XY velocity to 600 mm/s, tool change speed to 550 mm/s and dock grab speed to 30 mm/s. Only enable this if dock positions and belt tension are calibrated and tool changes are already reliable."
             cmd:
               - bash
               - -xc
@@ -48,7 +48,7 @@ settings:
                 /etc/init.d/S60klipper restart
           aggressive:
             label: Aggressive
-            confirm: "Enable Max Speed (Aggressive)? This raises XY velocity to 750 mm/s, acceleration to 25000 mm/s², tool change speed to 700 mm/s, tool change acceleration to 25000 mm/s² and dock grab speed to 40 mm/s. Start with Balanced and only move to Aggressive once tool changes are reliable there. Otherwise expect crashes into the docks, layer shifts and skipped steps. Cannot be combined with TMC AutoTune or TMC Reduced Current."
+            confirm: "Enable Max Speed (Aggressive)? Sets XY velocity to 750 mm/s, tool change speed to 700 mm/s and dock grab speed to 50 mm/s. Only enable this if dock positions and belt tension are calibrated and tool changes are already reliable."
             cmd:
               - bash
               - -xc

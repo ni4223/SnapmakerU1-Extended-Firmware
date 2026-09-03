@@ -69,22 +69,35 @@ the `Aggressive` values are the ones proposed by @justinh-rahb in
 |---|---|---|---|
 | Max XY velocity | 500 mm/s | 600 mm/s | 750 mm/s |
 | Max acceleration | 20000 mm/s² | 22000 mm/s² | 25000 mm/s² |
+| Cornering speed | 8 mm/s | 10 mm/s | 15 mm/s |
 | Tool change speed | 400 mm/s | 550 mm/s | 700 mm/s |
+| Slow dock-entry speed | 60 mm/s | 40 mm/s | 60 mm/s |
+| Dock grab speed | 10 mm/s | 30 mm/s | 50 mm/s |
 | Tool change acceleration | 5000 mm/s² | 12000 mm/s² | 25000 mm/s² |
-| Dock grab speed | 10 mm/s | 20 mm/s | 40 mm/s |
 
 Both tiers also apply the same TMC2240 chopper tuning (`TBL`, `TOFF`, `HEND`,
 `HSTRT`, `TPFD`, `VHIGHFS`, `VHIGHCHM`, `PWM_*`) and re-assert the stock 1.2A X/Y
 run current.
 
-**Which one:** start with `Balanced`. Most of the margin between the two tiers is on
-the tool change side, because dock grab speed and tool change acceleration are
-what drive the head into the dock and are not capped by anything in the slicer.
-Move to `Aggressive` only once tool changes are reliable on `Balanced`.
+**Which one:** start with `Balanced`. Its tool change values sit at roughly half of
+the point where tool confirmation retries were observed, so it keeps a wider margin
+on the motions that drive the head into the dock. Move to `Aggressive` only once
+tool changes are reliable on `Balanced`.
+
+`Balanced` sets the slow dock-entry speed *below* stock, on purpose. That move is
+short, so the time it costs is small compared with what the faster travel speed
+saves, and it buys margin on the approach into the dock. A slightly slower dock
+approach on `Balanced` is expected, not a regression. `Aggressive` keeps it at the
+stock 60 mm/s. Both tiers state the value explicitly so the whole tool change
+sequence is visible in one place.
 
 Raising `max_velocity` on its own changes little in practice — the slicer caps
 print moves by volumetric flow long before 750 mm/s, so this mostly affects
-travel moves.
+travel moves. `square_corner_velocity` is the opposite: it applies at every
+direction change, which on a detailed model happens constantly, so it can save
+more print time than the headline velocity figure. The cost is a harder jolt at
+each corner, which can show up as ringing on wall surfaces — this is the setting
+most sensitive to input shaper being calibrated.
 
 **Requirements:**
 - Dock positions are calibrated correctly
@@ -129,7 +142,10 @@ template, which can only be changed by restating the whole macro body. Raising
 1000 mm/s² and still at 0.650A — an untested combination on sensorless homing,
 with a failure mode (crashing into an endstop) that this tweak does not cover.
 
-`square_corner_velocity` is also left alone: stock is already 8 mm/s.
+`square_corner_velocity` was left at stock in #675. Both tiers now raise it, after
+a community configuration running the same tool change ceiling was found to use
+20 mm/s. Both tiers stay below that: unlike the tool change values, there is no
+tested failure point for this setting, only one machine known to run 20.
 
 **Configuration:**
 This feature can **only** be configured via Firmware Configuration web interface. Manual configuration is not supported.
