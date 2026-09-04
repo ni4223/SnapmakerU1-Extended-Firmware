@@ -56,11 +56,11 @@ This feature can **only** be configured via Firmware Configuration web interface
 
 ## Max Speed
 
-Raises the XY motion limits and speeds up tool changes, together with the TMC2240
-chopper tuning that keeps the XY drivers stable at those speeds.
+Raises the XY motion limits and speeds up tool changes. Motion settings only — no
+stepper driver registers are changed, so sensorless homing is unaffected.
 
-Parameters derived from [@JNP-1](https://github.com/JNP-1/Snapmaker-U1-Config);
-the `Aggressive` values are the ones proposed by @justinh-rahb in
+Values derived from [@JNP-1](https://github.com/JNP-1/Snapmaker-U1-Config), with the
+tool change values proposed by @justinh-rahb in
 [#679](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/pull/679).
 
 **Two tiers:**
@@ -75,29 +75,16 @@ the `Aggressive` values are the ones proposed by @justinh-rahb in
 | Dock grab speed | 10 mm/s | 30 mm/s | 50 mm/s |
 | Tool change acceleration | 5000 mm/s² | 12000 mm/s² | 25000 mm/s² |
 
-Both tiers also apply the same TMC2240 chopper tuning (`TBL`, `TOFF`, `HEND`,
-`HSTRT`, `TPFD`, `VHIGHFS`, `VHIGHCHM`, `PWM_*`) and re-assert the stock 1.2A X/Y
-run current.
+**Which one:** start with `Balanced` and move to `Aggressive` only once tool changes
+are reliable. `Balanced`'s tool change values sit at roughly half the point where
+tool confirmation retries have been observed. Its dock-entry speed is deliberately
+below stock — that move is short, so a slightly slower dock approach is expected,
+not a regression.
 
-**Which one:** start with `Balanced`. Its tool change values sit at roughly half of
-the point where tool confirmation retries were observed, so it keeps a wider margin
-on the motions that drive the head into the dock. Move to `Aggressive` only once
-tool changes are reliable on `Balanced`.
-
-`Balanced` sets the slow dock-entry speed *below* stock, on purpose. That move is
-short, so the time it costs is small compared with what the faster travel speed
-saves, and it buys margin on the approach into the dock. A slightly slower dock
-approach on `Balanced` is expected, not a regression. `Aggressive` keeps it at the
-stock 60 mm/s. Both tiers state the value explicitly so the whole tool change
-sequence is visible in one place.
-
-Raising `max_velocity` on its own changes little in practice — the slicer caps
-print moves by volumetric flow long before 750 mm/s, so this mostly affects
-travel moves. `square_corner_velocity` is the opposite: it applies at every
-direction change, which on a detailed model happens constantly, so it can save
-more print time than the headline velocity figure. The cost is a harder jolt at
-each corner, which can show up as ringing on wall surfaces — this is the setting
-most sensitive to input shaper being calibrated.
+Cornering speed is the setting most likely to affect print quality. It applies at
+every direction change rather than only on long moves, so it saves the most time,
+but a harder jolt at each corner can show up as ringing on walls if input shaper is
+not calibrated.
 
 **Requirements:**
 - Dock positions are calibrated correctly
@@ -116,11 +103,11 @@ most sensitive to input shaper being calibrated.
 - Start with `Balanced` and a small test print, and watch the first tool changes
 - Disable if you see dock alignment problems or layer shifts
 
-**Note:** This tweak cannot be combined with [TMC AutoTune](#tmc-autotune) or
-[TMC Reduced Current](#tmc-reduced-current) — all three change the same TMC2240
-driver settings, and Max Speed needs the full 1.2A X/Y current. Firmware Config
-refuses to enable a conflicting combination and tells you which tweak to disable
-first.
+**Note:** This tweak cannot be combined with
+[TMC Reduced Current](#tmc-reduced-current) — running the X/Y motors at 1.0A with
+these raised speed limits is untested. Firmware Config refuses that combination
+and tells you which tweak to disable first. [TMC AutoTune](#tmc-autotune) can be
+used alongside Max Speed; the two no longer change any setting in common.
 
 ### Not ported from JNP-1's configuration
 
@@ -133,19 +120,8 @@ hold on any U1. These parts are deliberately left at stock:
 | `[input_shaper]` and the `[resonance_tester]` probe point | — | X 54 Hz, Y 47.5 Hz | The right values depend on your individual printer. Run `SHAPER_CALIBRATE`, then `SAVE_CONFIG`. |
 | `rotation_distance` on all four extruders | 4.95 | 5.0147 | Extruder calibration, not a speed setting. |
 | `fan_speed` on `e0`–`e3_nozzle_fan` | 1 | 0.8 | Cooling preference, unrelated to motion. |
-| Faster homing: `[homing_xyz_override] speed`, the `M204` accel cap and the homing current | 300 mm/s, `S1000`, 0.650A | 800 mm/s, `S10000`, 0.900A | See below. |
-
-Homing needs all three of those together. `speed` is an ordinary config option,
-but the accel cap and the homing current live inside that section's `gcode:`
-template, which can only be changed by restating the whole macro body. Raising
-`speed` on its own would mean homing at 800 mm/s while still capped at
-1000 mm/s² and still at 0.650A — an untested combination on sensorless homing,
-with a failure mode (crashing into an endstop) that this tweak does not cover.
-
-`square_corner_velocity` was left at stock in #675. Both tiers now raise it, after
-a community configuration running the same tool change ceiling was found to use
-20 mm/s. Both tiers stay below that: unlike the tool change values, there is no
-tested failure point for this setting, only one machine known to run 20.
+| TMC2240 chopper tuning on `stepper_x` / `stepper_y` | Klipper defaults | tuned | Shifts the StallGuard reading that sensorless homing relies on, which breaks homing on some machines. Most of it cannot take effect on a stock U1 anyway. |
+| Faster homing: `[homing_xyz_override]` speed, accel cap and homing current | 300 mm/s, `S1000`, 0.650A | 800 mm/s, `S10000`, 0.900A | Only needed to compensate for the driver tuning above. Without it, homing already behaves as stock. |
 
 **Configuration:**
 This feature can **only** be configured via Firmware Configuration web interface. Manual configuration is not supported.
@@ -198,7 +174,7 @@ Changes take effect immediately after Klipper restarts (no reboot required).
 These tweaks work by adding or removing configuration files from `/oem/printer_data/config/extended/`:
 - `klipper/tmc_autotune.cfg` - TMC AutoTune parameters
 - `klipper/tmc_current.cfg` - Reduced current settings
-- `klipper/10_max_speed.cfg` - Max Speed motion limits, tool change speeds and driver tuning (either tier installs to this one file)
+- `klipper/10_max_speed.cfg` - Max Speed motion limits and tool change speeds (either tier installs to this one file)
 - `moonraker/object_processing.cfg` - Moonraker object processing settings
 
 These files are automatically included by the main printer configuration if present. Manual editing of these files is not recommended as they will be overwritten by the Firmware Configuration interface.

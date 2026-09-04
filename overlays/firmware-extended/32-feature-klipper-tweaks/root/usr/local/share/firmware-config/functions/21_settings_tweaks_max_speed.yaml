@@ -4,7 +4,7 @@
 
 # Both tiers install to the same extended/klipper/10_max_speed.cfg, so switching
 # between them is a single overwrite and the two tiers can never both be active.
-# The tier is read back from the `# tier:` marker on the first line.
+# The tier is read back from the `# tier:` marker in the installed file's header.
 
 settings:
   tweaks:
@@ -33,11 +33,6 @@ settings:
               - bash
               - -xc
               - |
-                if test -f /oem/printer_data/config/extended/klipper/tmc_autotune.cfg; then
-                  echo "ERROR: TMC AutoTune is enabled and changes the same TMC2240 driver settings."
-                  echo "Disable TMC AutoTune first, then enable Max Speed."
-                  exit 1
-                fi
                 if test -f /oem/printer_data/config/extended/klipper/tmc_current.cfg; then
                   echo "ERROR: TMC Reduced Current is enabled and lowers the X/Y motor current."
                   echo "Disable TMC Reduced Current first, then enable Max Speed."
@@ -53,11 +48,6 @@ settings:
               - bash
               - -xc
               - |
-                if test -f /oem/printer_data/config/extended/klipper/tmc_autotune.cfg; then
-                  echo "ERROR: TMC AutoTune is enabled and changes the same TMC2240 driver settings."
-                  echo "Disable TMC AutoTune first, then enable Max Speed."
-                  exit 1
-                fi
                 if test -f /oem/printer_data/config/extended/klipper/tmc_current.cfg; then
                   echo "ERROR: TMC Reduced Current is enabled and lowers the X/Y motor current."
                   echo "Disable TMC Reduced Current first, then enable Max Speed."
