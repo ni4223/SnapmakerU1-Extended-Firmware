@@ -69,7 +69,6 @@ tool change values proposed by @justinh-rahb in
 |---|---|---|---|
 | Max XY velocity | 500 mm/s | 600 mm/s | 750 mm/s |
 | Max acceleration | 20000 mm/s² | 22000 mm/s² | 25000 mm/s² |
-| Cornering speed | 8 mm/s | 10 mm/s | 15 mm/s |
 | Tool change speed | 400 mm/s | 550 mm/s | 700 mm/s |
 | Slow dock-entry speed | 60 mm/s | 40 mm/s | 60 mm/s |
 | Dock grab speed | 10 mm/s | 30 mm/s | 50 mm/s |
@@ -80,11 +79,6 @@ are reliable. `Balanced`'s tool change values sit at roughly half the point wher
 tool confirmation retries have been observed. Its dock-entry speed is deliberately
 below stock — that move is short, so a slightly slower dock approach is expected,
 not a regression.
-
-Cornering speed is the setting most likely to affect print quality. It applies at
-every direction change rather than only on long moves, so it saves the most time,
-but a harder jolt at each corner can show up as ringing on walls if input shaper is
-not calibrated.
 
 **Requirements:**
 - Dock positions are calibrated correctly
