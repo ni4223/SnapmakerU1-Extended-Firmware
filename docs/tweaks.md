@@ -59,9 +59,12 @@ This feature can **only** be configured via Firmware Configuration web interface
 Raises the XY motion limits and speeds up tool changes. Motion settings only — no
 stepper driver registers are changed, so sensorless homing is unaffected.
 
-Values derived from [@JNP-1](https://github.com/JNP-1/Snapmaker-U1-Config), with the
-tool change values proposed by @justinh-rahb in
-[#679](https://github.com/paxx12-snapmaker-u1/SnapmakerU1-Extended-Firmware/pull/679).
+Both tiers run the printer above the motion limits Snapmaker ships it with — the
+`Stock` column below is the rated configuration, and every value to the right of it
+is beyond what the machine is specified for. These numbers are community-tested,
+not vendor-validated, and the extra speed is paid for in wear.
+
+Values derived from [@JNP-1](https://github.com/JNP-1/Snapmaker-U1-Config).
 
 **Two tiers:**
 
@@ -75,10 +78,8 @@ tool change values proposed by @justinh-rahb in
 | Tool change acceleration | 5000 mm/s² | 12000 mm/s² | 25000 mm/s² |
 
 **Which one:** start with `Balanced` and move to `Aggressive` only once tool changes
-are reliable. `Balanced`'s tool change values sit at roughly half the point where
-tool confirmation retries have been observed. Its dock-entry speed is deliberately
-below stock — that move is short, so a slightly slower dock approach is expected,
-not a regression.
+are reliable. `Balanced`'s dock-entry speed is deliberately below stock — that move
+is short, so a slightly slower dock approach is expected, not a regression.
 
 **Requirements:**
 - Dock positions are calibrated correctly
@@ -87,6 +88,7 @@ not a regression.
 - Tool changes are already reliable with the stock configuration
 
 **Risks:**
+- Accelerated wear from running the printer above its rated limits
 - Crashes into the tool docks if dock positions are off
 - Layer shifts and skipped steps under heavy load
 - Higher driver and motor temperatures
@@ -102,20 +104,6 @@ not a regression.
 these raised speed limits is untested. Firmware Config refuses that combination
 and tells you which tweak to disable first. [TMC AutoTune](#tmc-autotune) can be
 used alongside Max Speed; the two no longer change any setting in common.
-
-### Not ported from JNP-1's configuration
-
-[@JNP-1's repo](https://github.com/JNP-1/Snapmaker-U1-Config) is a complete
-`printer.cfg`. This tweak takes only the settings that are about speed and that
-hold on any U1. These parts are deliberately left at stock:
-
-| Not ported | Stock | JNP-1 | Why |
-|---|---|---|---|
-| `[input_shaper]` and the `[resonance_tester]` probe point | — | X 54 Hz, Y 47.5 Hz | The right values depend on your individual printer. Run `SHAPER_CALIBRATE`, then `SAVE_CONFIG`. |
-| `rotation_distance` on all four extruders | 4.95 | 5.0147 | Extruder calibration, not a speed setting. |
-| `fan_speed` on `e0`–`e3_nozzle_fan` | 1 | 0.8 | Cooling preference, unrelated to motion. |
-| TMC2240 chopper tuning on `stepper_x` / `stepper_y` | Klipper defaults | tuned | Shifts the StallGuard reading that sensorless homing relies on, which breaks homing on some machines. Most of it cannot take effect on a stock U1 anyway. |
-| Faster homing: `[homing_xyz_override]` speed, accel cap and homing current | 300 mm/s, `S1000`, 0.650A | 800 mm/s, `S10000`, 0.900A | Only needed to compensate for the driver tuning above. Without it, homing already behaves as stock. |
 
 **Configuration:**
 This feature can **only** be configured via Firmware Configuration web interface. Manual configuration is not supported.

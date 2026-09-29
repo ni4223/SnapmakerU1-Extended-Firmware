@@ -11,7 +11,7 @@ settings:
     items:
       max_speed:
         label: Max Speed
-        description: Raises the XY motion limits and speeds up tool changes. Balanced is the recommended starting point. Requires a calibrated printer.
+        description: Experimental. Raises the XY motion limits and speeds up tool changes. Increases wear on your printer and can cause print problems such as Z skipping. Balanced is the recommended starting point, and a calibrated printer is required.
         help_url: http://snapmakeru1-extended-firmware.pages.dev/tweaks#max-speed
         get_cmd:
           - bash
@@ -28,7 +28,10 @@ settings:
         options:
           balanced:
             label: Balanced
-            confirm: "Enable Max Speed (Balanced)? Sets XY velocity to 600 mm/s, tool change speed to 550 mm/s and dock grab speed to 30 mm/s. Only enable this if dock positions and belt tension are calibrated and tool changes are already reliable."
+            confirm: |-
+              WARNING: EXPERIMENTAL. Raises XY velocity to 600 mm/s (stock 500), tool changes to 550 mm/s and dock grab to 30 mm/s.
+              This runs the printer past its rated limits. It increases wear on your printer and can cause print problems such as Z skipping, layer shifts, and ringing.
+              Only enable on a fully calibrated printer with tool changes already reliable at stock speeds. Set this back to Disabled if prints degrade.
             cmd:
               - bash
               - -xc
@@ -43,7 +46,10 @@ settings:
                 /etc/init.d/S60klipper restart
           aggressive:
             label: Aggressive
-            confirm: "Enable Max Speed (Aggressive)? Sets XY velocity to 750 mm/s, tool change speed to 700 mm/s and dock grab speed to 50 mm/s. Only enable this if dock positions and belt tension are calibrated and tool changes are already reliable."
+            confirm: |-
+              WARNING: EXPERIMENTAL — highest tier. Raises XY velocity to 750 mm/s (stock 500), tool changes to 700 mm/s and dock grab to 50 mm/s.
+              This runs the printer well past its rated limits. It increases wear on your printer and can cause print problems such as Z skipping, layer shifts, and ringing.
+              Only enable on a fully calibrated printer with tool changes already reliable at stock speeds. Drop back if prints degrade.
             cmd:
               - bash
               - -xc
